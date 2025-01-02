@@ -162,75 +162,6 @@ Example:
 ### Notes
 - Ensure that the `Content-Type` header is set to `application/json` when making the request.
 
-## Endpoint: `/api/user/refreshtoken`
-
-### Description
-This endpoint is used to generate a new authentication token using a refresh token.
-
-### Method
-`POST`
-
-### Request Body
-No request body is required. The refresh token should be sent as a cookie.
-
-### Response
-
-#### Success Response
-- **Status Code**: `200 OK`
-- **Response Body**:
-  ```json
-  {
-    "message": "new token generated",
-    "success": true,
-    "token": "new_auth_token"
-  }
-  ```
-
-#### Error Responses
-
-- **Missing Refresh Token**
-  - **Status Code**: `400 Bad Request`
-  - **Response Body**:
-    ```json
-    {
-      "message": "refresh token not exist",
-      "success": false
-    }
-    ```
-
-- **Invalid Refresh Token**
-  - **Status Code**: `400 Bad Request`
-  - **Response Body**:
-    ```json
-    {
-      "message": "Invalid refresh token",
-      "success": false
-    }
-    ```
-
-- **Expired Refresh Token**
-  - **Status Code**: `400 Bad Request`
-  - **Response Body**:
-    ```json
-    {
-      "message": "Refresh token expired",
-      "success": false
-    }
-    ```
-
-- **Unexpected Error**
-  - **Status Code**: `500 Internal Server Error`
-  - **Response Body**:
-    ```json
-    {
-      "message": "An unexpected error occurred",
-      "success": false
-    }
-    ```
-
-### Notes
-- Ensure that the `Content-Type` header is set to `application/json` when making the request.
-
 ## Endpoint: `/api/user/logout`
 
 ### Description
@@ -255,6 +186,68 @@ No request body is required. The refresh token should be sent as a cookie.
   ```
 
 #### Error Responses
+
+- **Unexpected Error**
+  - **Status Code**: `500 Internal Server Error`
+  - **Response Body**:
+    ```json
+    {
+      "message": "An unexpected error occurred",
+      "success": false
+    }
+    ```
+
+### Notes
+- Ensure that the `Content-Type` header is set to `application/json` when making the request.
+
+## Endpoint: `/api/user/profile`
+
+### Description
+This endpoint is used to get the profile of the authenticated user.
+
+### Method
+`GET`
+
+### Request Headers
+- `Authorization` (string): The Bearer token for authentication.
+
+### Response
+
+#### Success Response
+- **Status Code**: `200 OK`
+- **Response Body**:
+  ```json
+  {
+    "user": {
+      "username": "john_doe",
+      "email": "john.doe@example.com",
+      // other user details
+    },
+    "success": true
+  }
+  ```
+
+#### Error Responses
+
+- **Unauthorized**
+  - **Status Code**: `401 Unauthorized`
+  - **Response Body**:
+    ```json
+    {
+      "message": "Unauthorized",
+      "success": false
+    }
+    ```
+
+- **Invalid Token**
+  - **Status Code**: `400 Bad Request`
+  - **Response Body**:
+    ```json
+    {
+      "message": "Invalid Token",
+      "success": false
+    }
+    ```
 
 - **Unexpected Error**
   - **Status Code**: `500 Internal Server Error`

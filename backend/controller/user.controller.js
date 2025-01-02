@@ -122,45 +122,20 @@ const Login = async (req, res) => {
   }
 };
 
-const ManageRefreshtoken = async (req, res) => {
-  try {
-    const { refreshtoken } = req.cookies;
-    if (!refreshtoken) {
-      return res.status(400).json({
-        message: "refresh token not exist",
-        success: false,
-      });
-    }
-
-    const user = await userModel.findOne({ refreshtoken });
-    if(!user){
-      return res.status(400).json({
-        message:"Invalid refresh token"
-      })
-    }
-
-    jwt.verify(refreshtoken,process.env.REFRESH_TOKEN_KEY,(err,decoded)=>{
-      if (err){
-        return res.status(400).json({message:"Refresh token expired",success:false})
-      }
-    })
-
-    const token=user.generateAuthToken();
-    res.json({message:"new token generated",success:true,token});
-  } catch (error) {
-    return res.status(500).json({ message: error.message, success: false });
-  }
-};
-
 const Logout=async(req,res)=>{
   try {
-    const {refreshToken}=req.refreshToken;
+    const {refreshToken}=req.cookies;
     await userModel.updateOne({refreshToken},{$unset:{refreshToken:""}});
 
     return res.clearCookie("refreshToken").json({message:"Logout successfully",success:true});
   } catch (error) {
-    
+    return res.status(500).json({message:"unable to logout",success:false})
   }
 }
 
-module.exports = { Signup, Login, ManageRefreshtoken,Logout};
+const getUserProfile=(req,res)=>{
+  const user=req.user;
+  return res.status(200).json({user,success:true})
+}
+
+module.exports = { Signup, Login,Logout,getUserProfile};
