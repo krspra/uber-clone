@@ -10,8 +10,8 @@ const userSchema = new Schema({
   },
   email: {
     type: String,
-    unique: true,
-    required: true,
+    unique:[true,"email already registered"],
+    required: [true,"email is required"],
     minLength: [5, "email should be atleast of 5 characters"],
     match: [
       /^[a-zA-Z0-9+-_.%]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
@@ -27,7 +27,7 @@ const userSchema = new Schema({
   socketId: {
     type: String,
   },
-  refreshToken: String,
+  refreshtoken: String,
 });
 
 userSchema.methods.generateAuthToken = function () {
@@ -46,6 +46,7 @@ userSchema.statics.hashPassword = async function (passwordByUser) {
 userSchema.methods.generateRefreshToken = function () {
   return jwt.sign({ _id: this._id }, process.env.REFRESH_TOKEN_KEY, {expiresIn:"7d"});
 };
+
 
 const userModel = model("user", userSchema);
 

@@ -4,17 +4,8 @@ const Signup = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists
-    let user = await userModel.findOne({ email });
-    if (user) {
-      return res.status(400).json({
-        message: "User already exists",
-        success: false,
-      });
-    }
-
     // Create a new user instance with the provided data
-    user = new userModel({ username, email, password });
+    const user = new userModel({ username, email, password });
 
     // Validate the user instance
     await user.validate();
@@ -22,6 +13,7 @@ const Signup = async (req, res) => {
     // Hash the password after validation
     user.password = await userModel.hashPassword(password);
 
+    //creating tokens
     const Refreshtoken = user.generateRefreshToken();
     const token = user.generateAuthToken();
 
@@ -55,6 +47,13 @@ const Signup = async (req, res) => {
       });
     }
 
+    //this one is for unique email id , because this error don't come under ValidationError
+    else if(err.name==="MongooseError"){
+      return res.status(400).json({
+        message:err.message,
+        success:false
+      })
+    }
     // Handle other errors
     return res.status(500).json({
       message: "An unexpected error occurred",
@@ -86,7 +85,6 @@ const Login = async (req, res) => {
     }
 
     // Compare the password
-
     const passwordMatch = await user.comparePassword(password);
     if (!passwordMatch) {
       return res.status(400).json({
